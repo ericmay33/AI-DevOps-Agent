@@ -1,82 +1,97 @@
-# DevOps AutoPilot — An AI Agent That Self-Heals Your CI/CD 🚀🛠️
+# DevOps Autonomous CI Remediation Agent
 
-DevOps AutoPilot is an AI-powered DevOps companion that **analyzes**, **diagnoses**, and **self-heals** your repository's infrastructure.  
-It scans your repo, identifies missing or broken DevOps components, proposes fixes, and—when approved—**automatically generates pull requests** to repair or upgrade your CI/CD pipeline.
+## Overview
+This project is an AI-powered DevOps agent that analyzes a repository, detects CI/CD pipeline failures, determines the root cause, proposes or applies fixes, and automatically opens pull requests.
 
-Think of it as your tired, overworked senior DevOps engineer…  
-But powered by LLMs, less grumpy, and actually excited to fix YAML files at 3AM.
+The system is built now with:
 
----
+- 🔍 Repository analysis  
+- 🧠 CI failure diagnosis  
+- 🛠️ Auto-generated patches  
+- 🔁 PR automation with explanations  
 
-## ⭐ What It Does
-
-### 🧠 1. Repository Understanding  
-The agent deeply inspects your project:
-- CI/CD configs (GitHub Actions, Docker, Terraform, etc.)
-- Pipeline health & patterns
-- Missing or outdated workflows
-- Security risks / misconfigurations
-- DevOps “maturity score” (because judgement builds character)
-
-### 🔧 2. Self-Healing Pipeline Engine  
-When issues are found, the agent can:
-- Auto-generate new GitHub Actions workflows
-- Patch Dockerfiles and build configs
-- Repair broken pipelines
-- Propose infra upgrades or sanity checks
-
-### ⚡ 3. Automated Fix Orchestration  
-The system can:
-- Open PRs for fixes  
-- Run sandbox simulations  
-- Trigger CI workflows  
-- Validate repairs and roll back if needed (we are responsible adults)
-
-### 🔍 4. Interactive DevOps Command Center UI  
-A beautiful(ish) frontend where you can:
-- Browse your repo like a mini VSCode  
-- Watch the agent think live  
-- Approve/deny automated fixes  
-- See pipeline changes side-by-side  
-- Feel like Iron Man, but with YAML
+We are **not yet implementing infrastructure consistency scans**, but the system architecture is intentionally designed so that such features can plug in later without major rewrites.
 
 ---
 
-## 🏗️ Architecture Overview
+## System Architecture\
 
-**Shawn — The Brain 🧠**  
-Analysis Engine → Missing Pipeline Detector → Risk Assessment → Recommendations
+Repository
+↓
+Scanner / Analyzer
+↓
+Knowledge Model (LLM + structured storage)
+↓
+Failure Analysis (root cause)
+↓
+Proposed Fix / Patch Generator
+↓
+GitHub API → Branch → Commit → PR
 
-**Eric — The Hands 🛠️**  
-Self-Healing Engine → Fix Generator → PR Automation → Pipeline Re-Runner
+### Components
 
-**Shared Work 🤝**  
-UI + API Backend + Deployment
+#### Repo Analysis Engine
+- Walks repo tree
+- Identifies:
+  - Workflows
+  - Dockerfiles
+  - Dependency files
+  - Key config files
+- Produces a structured data model the agent can query
+
+#### CI Log Ingestion
+- Interfaces with GitHub API
+- Fetches logs from failed runs
+
+#### Reasoning Engine
+- Classifies failure type  
+- Generates a structured remediation plan
+
+#### Patch Generator
+- Applies file edits
+- Writes or updates config files accordingly
+
+#### PR Automation
+Creates a full pull request including:
+- Summary of failure
+- Reasoning behind fix
+- Changes made
+- Confidence estimates
 
 ---
 
-## ⚙️ Tech Stack
+## Technology Stack
 
-- **Backend:** FastAPI, Python, Pydantic, GitHub API, OpenAI API  
-- **Frontend:** React + Tailwind (lightweight, simple, effective)  
-- **Infra:** Docker, GitHub Actions, Railway/Render  
-- **AI:** GPT-4o / GPT-5-series models with function-calling  
-- **Storage:** SQLite or Postgres (depending on time and tears shed)  
+### Backend
+- Python (FastAPI or similar)
+- GitHub REST or GraphQL API
+- Repo FS parsing
+- Docker
+
+### Agent / AI
+- LLM-based reasoning
+- Deterministic guardrail prompts
+- Optional embeddings for persistent repo context
+
+### Frontend
+A minimal interface showing:
+- Live agent actions (e.g. “Analyzing CI logs…”)
+- Repo scan results
+- Proposed patches
+- PR history
 
 ---
 
-## 🧪 Running Locally
+## Future Expansion
+Later we will add **infrastructure consistency and drift checks**, and the architecture has been built to make this possible without:
 
-```bash
-git clone <repo-url>
-cd devops-autopilot
+- Changing the repo knowledge model
+- Rewriting patch application logic
+- Replacing the CI analysis workflow
 
-# Backend
-cd backend
-pip install -r requirements.txt
-uvicorn app:app --reload
+---
 
-# Frontend
-cd ../frontend
-npm install
-npm run dev
+## Project Status
+- Requirements defined  
+- Architecture designed  
+- Development beginning  

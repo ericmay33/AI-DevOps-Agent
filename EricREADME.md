@@ -1,82 +1,96 @@
-# Eric’s Responsibilities — The Hands of God 🛠️
+# Eric – Responsibilities & Development Plan
 
-This document outlines Eric’s responsibilities for DevOps AutoPilot, including sprint tasks, user stories, and definitions of done.
+## Role Summary
+Eric leads:
 
-Eric’s domain = **Execution, fixing, automation, PRs, and any part where we tell the AI “do the thing.”**
+- Practical system implementation
+- GitHub integration
+- File system parsing
+- Patch application
+- Automated PR lifecycle
 
-You basically build the part that makes the project terrifyingly powerful.
+Shawn creates the logic; Eric turns it into working software.
 
 ---
 
-# 🚀 Sprint Breakdown
+# Sprint Plan
 
-## **Sprint 1 — Self-Healing Pipeline Engine**
+## Sprint 1 – Repository Scanner Implementation
 ### User Story
-“As a developer, I want the system to automatically repair my CI/CD pipeline so I don’t suffer.”
+As the agent, I need to collect repository contents so analysis can be performed.
 
-### Tasks
-- Ingest Shawn’s analysis JSON  
-- Map each issue to a fix template  
-- Patch existing GitHub Actions  
-- Generate missing workflows  
-- Patch/optimize Dockerfiles  
-- Create sandbox simulation mode
+### Eric Responsibilities
+- Build:
+  - Directory walker
+  - File classification
+  - Detection of:
+    - Workflow files
+    - Dockerfiles
+    - Dependency manifests
+- Serialize output to Shawn’s schema
 
 ### Definition of Done
-- Engine outputs patch files + new workflows  
-- Doesn’t overwrite the universe  
-- Can run in “dry run mode”  
-- Logs EVERYTHING  
+- Scanner can run against any repo
+- Generates structured JSON output
 
 ---
 
-## **Sprint 2 — Automated Action Orchestrator**
+## Sprint 2 – GitHub API + CI Log Retrieval
 ### User Story
-“As a user, I want the agent to apply fixes automatically and cleanly.”
+As the agent, I need CI logs to determine why jobs failed.
 
-### Tasks
-- GitHub PR automation  
-- Commit/branch creation  
-- Post-fix validations  
-- Pipeline re-run triggers  
-- Rollback system if something explodes
+### Eric Responsibilities
+- Integrate with GitHub API:
+  - Auth setup
+  - Fetch CI runs
+  - Download logs
+- Expose data to Shawn’s analyzer
 
 ### Definition of Done
-- A PR gets generated on a real repo  
-- Validated changes before merge  
-- Rollback tested  
-- Agent feels reliable (ish)
+- A script or service can:
+  - Download logs
+  - Hand them directly to the reasoning engine
 
 ---
 
-## **Sprint 3 — Shared Frontend + Orchestration UI Layer**
+## Sprint 3 – Patch Application & PR Automation
 ### User Story
-“As a user, I want a clear view of what the agent is doing to my repo.”
+As a developer, I want the AI to apply fixes and open PRs automatically.
 
-### Tasks (shared with Shawn)
-- Live fix-preview diff viewer  
-- Action logs feed (“applying fix #2... praying...”)  
-- Pipeline results view  
-- PR viewer  
-- Approve/deny buttons  
+### Eric Responsibilities
+- Implement:
+  - Patch application from Shawn’s structured output
+  - Branch creation
+  - Commit and push
+  - PR opening with relevant details
 
 ### Definition of Done
-- Users can accept/deny fixes  
-- PRs visible in the UI  
-- Logs stream in real-time  
-- Looks good enough to pretend we weren't screaming during dev
+- A fix proposed by the AI results in:
+  - Modified files
+  - A branch pushed to GitHub
+  - A PR created
 
 ---
 
-# 🤝 Integration With Shawn
+## Sprint 4 – Event/Timeline System
+### User Story
+As the user, I want to see what the agent is doing in real time.
 
-Eric’s engine **depends** on Shawn’s JSON blueprint.
+### Eric Responsibilities
+- Emit structured events such as:
+  - "Scanning repository"
+  - "CI logs retrieved"
+  - "Fix proposed"
+  - "PR opened"
 
-Flow:
-1. Shawn produces analysis + recommended fixes  
-2. Eric’s engine builds the actual code changes  
-3. Eric opens PRs + kicks off pipeline  
-4. Shawn’s reasoning engine scores the results  
-5. Repeat as needed  
+### Definition of Done
+- Frontend can subscribe and display progress in real time
 
-You two basically form DevOps Voltron.
+---
+
+## Core Implementation Principle
+Eric ensures:
+
+- System is stable and production-safe
+- Modules are decoupled
+- Adding future infrastructure audits is a small addition, not a rewrite

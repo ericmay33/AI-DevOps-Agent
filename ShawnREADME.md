@@ -1,85 +1,92 @@
-# Shawn’s Responsibilities — The Big Brain Module 🧠
+# Shawn – Responsibilities & Development Plan
 
-This document outlines Shawn’s core tasks for the DevOps AutoPilot project, including sprint breakdown, user stories, and definitions of done.
+## Role Summary
+Shawn leads:
 
-Shawn’s domain = **Understanding the repo + reasoning + diagnostics + decision logic.**
+- System architecture
+- Prompt and reasoning design
+- Failure classification logic
+- Patch-generation strategy
+- Ensuring future infrastructure audit features can slot in without system redesign
 
-Yes, this means you are building the “what’s wrong with this pipeline?” brain that DevOps engineers wish existed already.
+Eric implements, Shawn defines how the machine “thinks.”
 
 ---
 
-# 🚀 Sprint Breakdown
+# Sprint Plan
 
-## **Sprint 1 — Core Analysis Engine**
+## Sprint 1 – Repository Intelligence Design
 ### User Story
-“As a developer, I want the agent to understand my repo and CI setup so it can diagnose issues intelligently.”
+As the agent, I need to understand the structure and components of the repository so I can analyze and modify it effectively.
 
-### Tasks
-- Build repo ingestion module  
-- Parse GitHub repo structure  
-- Parse GitHub Actions YAML, Dockerfiles, Terraform files  
-- Create logical representations (graphs, trees)  
-- Detect missing DevOps components  
-- Score pipeline health
+### Shawn Responsibilities
+- Define:
+  - How repos are scanned
+  - What files are recognized
+  - Data structure of the “repo knowledge model”
+- Define how AI will summarize and tag artifacts
+- Ensure design supports future infra policy scans without rework
 
 ### Definition of Done
-- Backend endpoint returns structured pipeline analysis  
-- Can run on ANY repo  
-- Shows summary & detailed reasoning  
-- UI displays analysis results  
+- A specification describing:
+  - How scanned files are represented
+  - What metadata is stored
+  - How the LLM queries repo knowledge
 
 ---
 
-## **Sprint 2 — Reasoning + Recommendations Engine**
+## Sprint 2 – Failure Analysis Reasoning
 ### User Story
-“As a DevOps engineer, I want the agent to recommend fixes before applying changes.”
+As the agent, I want to read CI logs and determine the failure source so I can fix it logically.
 
-### Tasks
-- Build reasoning prompts  
-- Create pipeline “desired state model”  
-- Detect gaps → generate recommendation JSON  
-- Risk scoring system  
-- Output natural-language explanations  
-- Provide before/after diff previews
+### Shawn Responsibilities
+- Create the reasoning workflow, including:
+  - Classification categories (e.g. dependency failure, version mismatch, missing command, etc.)
+  - Multi-step prompt logic
+  - Structured output format
 
 ### Definition of Done
-- Agent can explain issues in plain English  
-- Produces a structured fix plan  
-- Validated by Eric’s repair engine  
-- UI displays explanations + fix previews  
+- Documented prompt templates
+- Output schema such as:
+
+{
+"root_cause": "...",
+"fix_summary": "...",
+"severity": "Medium"
+}
+
+yaml
+Copy code
 
 ---
 
-## **Sprint 3 — Shared Frontend + Powered Agent UX**
+## Sprint 3 – Patch Strategy Design
 ### User Story
-“As a user, I want a UI that feels like watching the AI think inside my repo.”
+As the system, I need to generate deterministic file modifications safely.
 
-### Tasks (shared with Eric)
-- Repo browser UI  
-- Live “agent thinking” view  
-- Diff viewer  
-- Recommendations tab  
-- Visual health meter  
+### Shawn Responsibilities
+- Define how changes are calculated
+- Define file mutation rules
+- Establish standards for:
+  - Patch output
+  - PR narratives
+  - Confidence scoring
 
 ### Definition of Done
-- Smooth interactive frontend  
-- Analysis + repair results visible  
-- Looks ✨ respectable ✨ but has personality  
+- Clear specification of patch-generation workflow
 
 ---
 
-# 🤝 Integration With Eric
+## Sprint 4 – Integration & Future-Proofing
+### Role
+- Verify that the entire pipeline is modular
+- Ensure that “infra drift scanning” can be added later with minimal new code
 
-Your analysis engine feeds directly into Eric’s self-healing engine.
+---
 
-Flow:
-1. Shawn detects issue  
-2. Shawn produces JSON blueprint describing:
-   - “issue”
-   - “risk”
-   - “proposed fix”
-   - file paths to change  
-3. Eric's engine consumes that JSON and applies real changes  
-4. UI receives updates from both
+## Deliverable Philosophy
+Shawn’s output enables Eric to build a robust system where:
 
-Together: unstoppable DevOps chaos.
+- All decision-making is predictable
+- AI outputs are structured and actionable
+- Future expansion does not break system architecture
