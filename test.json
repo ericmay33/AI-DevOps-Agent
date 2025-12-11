@@ -1,0 +1,1065 @@
+{
+  "repository": {
+    "id": "8b88c91a97cc4ddf",
+    "name": "repo_scan_ei356_dc",
+    "url": "",
+    "default_branch": "main",
+    "scanned_at": "2025-11-30T00:51:13.780996",
+    "scan_version": "1.0.0"
+  },
+  "artifacts": [
+    {
+      "id": "04c6e90faac2",
+      "type": "generic",
+      "subtype": "markdown",
+      "path": "README.md",
+      "name": "README.md",
+      "metadata": {
+        "size": 1792593,
+        "size_exceeded_limit": true
+      },
+      "content": {
+        "raw": null,
+        "metadata_only": true
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.770795"
+    },
+    {
+      "id": "a084b794bc07",
+      "type": "generic",
+      "subtype": "unknown",
+      "path": ".gitignore",
+      "name": ".gitignore",
+      "metadata": {},
+      "content": {
+        "raw": "",
+        "error": "Failed to read file: [Errno 2] No such file or directory: '.gitignore'"
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.770998"
+    },
+    {
+      "id": "6deb36c54c80",
+      "type": "generic",
+      "subtype": "markdown",
+      "path": "README-Off-Season.md",
+      "name": "README-Off-Season.md",
+      "metadata": {},
+      "content": {
+        "raw": "",
+        "error": "Failed to read file: [Errno 2] No such file or directory: 'README-Off-Season.md'"
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.771022"
+    },
+    {
+      "id": "6a3371457528",
+      "type": "generic",
+      "subtype": "markdown",
+      "path": "CONTRIBUTING.md",
+      "name": "CONTRIBUTING.md",
+      "metadata": {},
+      "content": {
+        "raw": "",
+        "error": "Failed to read file: [Errno 2] No such file or directory: 'CONTRIBUTING.md'"
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.771038"
+    },
+    {
+      "id": "859889471cb8",
+      "type": "workflow",
+      "subtype": "github_actions",
+      "path": ".github/workflows/contribution_approved.yml",
+      "name": "Contribution Approved",
+      "metadata": {
+        "platform": "github_actions",
+        "workflow_name": "Contribution Approved",
+        "workflow_id": "Contribution Approved",
+        "triggers": {
+          "push": {},
+          "pull_request": {},
+          "schedule": [],
+          "workflow_dispatch": false
+        },
+        "jobs": [
+          {
+            "job_id": "run-python-script",
+            "name": "run-python-script",
+            "runs_on": "ubuntu-latest",
+            "steps": [
+              {
+                "name": "Checkout Repository",
+                "type": "action",
+                "uses": "actions/checkout@v3",
+                "run": "",
+                "env": {}
+              },
+              {
+                "name": "Set up Python",
+                "type": "action",
+                "uses": "actions/setup-python@v3",
+                "run": "",
+                "env": {}
+              },
+              {
+                "name": "execute contribution_approved.py",
+                "type": "run",
+                "uses": "",
+                "run": "python .github/scripts/contribution_approved.py $GITHUB_EVENT_PATH",
+                "env": {
+                  "GITHUB_EVENT_PATH": "${{ github.event_path }}"
+                }
+              },
+              {
+                "name": "execute update_readmes.py",
+                "type": "run",
+                "uses": "",
+                "run": "python .github/scripts/update_readmes.py",
+                "env": {}
+              },
+              {
+                "name": "commit files",
+                "type": "run",
+                "uses": "",
+                "run": "git config --local user.email ${{ steps.python_script.outputs.commit_email }}\ngit config --local user.name ${{ steps.python_script.outputs.commit_username }}\ngit add .github/scripts/listings.json\ngit add README.md\ngit add README-Off-Season.md\ngit diff-index --quiet HEAD || (git commit -a -m \"${{ steps.python_script.outputs.commit_message }}\" --allow-empty)\n",
+                "env": {}
+              },
+              {
+                "name": "push changes",
+                "type": "action",
+                "uses": "ad-m/github-push-action@v0.6.0",
+                "run": "",
+                "env": {}
+              },
+              {
+                "name": "Post Summary and Close Issue (Bulk Mark Inactive)",
+                "type": "run",
+                "uses": "",
+                "run": "cat << 'EOF' > comment.txt\n${{ steps.python_script.outputs.summary_comment }}\nEOF\ngh issue comment ${{ github.event.issue.number }} --body-file comment.txt\ngh issue close --comment \"\u2705 Bulk update complete! The README has been updated and changes have been committed. Auto-closing issue.\" ${{ github.event.issue.number }}\n",
+                "env": {
+                  "GH_TOKEN": "${{ secrets.GITHUB_TOKEN }}"
+                }
+              },
+              {
+                "name": "Auto Close Issue (Regular Contributions)",
+                "type": "run",
+                "uses": "",
+                "run": "gh issue close --comment \"Your contribution was accepted. Auto-closing issue\" ${{ github.event.issue.number }}",
+                "env": {
+                  "GH_TOKEN": "${{ secrets.GITHUB_TOKEN }}"
+                }
+              },
+              {
+                "name": "Problem With Action",
+                "type": "run",
+                "uses": "",
+                "run": "gh issue comment ${{ github.event.issue.number }} --body \"There was an error with our github action. Error - ${{ steps.python_script.outputs.error_message }} ${{ steps.python_script_readme.outputs.error_message }}\"",
+                "env": {
+                  "GH_TOKEN": "${{ secrets.GITHUB_TOKEN }}"
+                }
+              }
+            ],
+            "needs": [],
+            "docker_image": ""
+          }
+        ],
+        "env_vars": [],
+        "secrets": [
+          "GITHUB_TOKEN"
+        ]
+      },
+      "content": {
+        "raw": "",
+        "error": "Failed to read file: [Errno 2] No such file or directory: '.github/workflows/contribution_approved.yml'"
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.773713"
+    },
+    {
+      "id": "6625ecbae2dc",
+      "type": "workflow",
+      "subtype": "github_actions",
+      "path": ".github/workflows/update_readmes.yml",
+      "name": "Update READMEs",
+      "metadata": {
+        "platform": "github_actions",
+        "workflow_name": "Update READMEs",
+        "workflow_id": "Update READMEs",
+        "triggers": {
+          "push": {},
+          "pull_request": {},
+          "schedule": [],
+          "workflow_dispatch": false
+        },
+        "jobs": [
+          {
+            "job_id": "run-python-script",
+            "name": "run-python-script",
+            "runs_on": "ubuntu-latest",
+            "steps": [
+              {
+                "name": "Checkout Repository",
+                "type": "action",
+                "uses": "actions/checkout@v3",
+                "run": "",
+                "env": {}
+              },
+              {
+                "name": "Set up Python",
+                "type": "action",
+                "uses": "actions/setup-python@v3",
+                "run": "",
+                "env": {}
+              },
+              {
+                "name": "execute update_readmes.py",
+                "type": "run",
+                "uses": "",
+                "run": "python .github/scripts/update_readmes.py",
+                "env": {}
+              },
+              {
+                "name": "Set commit message (with fallback)",
+                "type": "run",
+                "uses": "",
+                "run": "msg=\"${{ steps.python_script.outputs.commit_message }}\"\nif [ -z \"$msg\" ]; then\n  msg=\"Auto commit: update README\"\nfi\necho \"message=$msg\" >> \"$GITHUB_OUTPUT\"\n",
+                "env": {}
+              },
+              {
+                "name": "commit files",
+                "type": "run",
+                "uses": "",
+                "run": "git config --local user.email action@github.com\ngit config --local user.name 'Github Action'\ngit add README.md\ngit diff-index --quiet HEAD || \\\n  git commit -a -m \"${{ steps.final_commit_message.outputs.message }}\" --allow-empty\n",
+                "env": {}
+              },
+              {
+                "name": "push changes",
+                "type": "action",
+                "uses": "ad-m/github-push-action@v0.6.0",
+                "run": "",
+                "env": {}
+              },
+              {
+                "name": "Problem With Action",
+                "type": "run",
+                "uses": "",
+                "run": "echo \"There was an error with the github action. ${{ steps.python_script.outputs.error_message }}\"",
+                "env": {}
+              }
+            ],
+            "needs": [],
+            "docker_image": ""
+          }
+        ],
+        "env_vars": [],
+        "secrets": [
+          "GITHUB_TOKEN"
+        ]
+      },
+      "content": {
+        "raw": "",
+        "error": "Failed to read file: [Errno 2] No such file or directory: '.github/workflows/update_readmes.yml'"
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775066"
+    },
+    {
+      "id": "eb6684cf165e",
+      "type": "source",
+      "subtype": "py",
+      "path": ".github/scripts/contribution_approved.py",
+      "name": "contribution_approved.py",
+      "metadata": {
+        "language": "py"
+      },
+      "content": {
+        "raw": "",
+        "structured": null
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775101"
+    },
+    {
+      "id": "313bb4509fde",
+      "type": "source",
+      "subtype": "py",
+      "path": ".github/scripts/util.py",
+      "name": "util.py",
+      "metadata": {
+        "language": "py"
+      },
+      "content": {
+        "raw": "",
+        "structured": null
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775121"
+    },
+    {
+      "id": "80a8fe29bd80",
+      "type": "source",
+      "subtype": "py",
+      "path": ".github/scripts/update_readmes.py",
+      "name": "update_readmes.py",
+      "metadata": {
+        "language": "py"
+      },
+      "content": {
+        "raw": "",
+        "structured": null
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775142"
+    },
+    {
+      "id": "a6dbf6958ab9",
+      "type": "source",
+      "subtype": "py",
+      "path": ".github/scripts/bulk_mark_inactive.py",
+      "name": "bulk_mark_inactive.py",
+      "metadata": {
+        "language": "py"
+      },
+      "content": {
+        "raw": "",
+        "structured": null
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775163"
+    },
+    {
+      "id": "a83f34cb2cee",
+      "type": "generic",
+      "subtype": "json_file",
+      "path": ".github/scripts/listings.json",
+      "name": "listings.json",
+      "metadata": {
+        "size": 8430159,
+        "size_exceeded_limit": true
+      },
+      "content": {
+        "raw": null,
+        "metadata_only": true
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775168"
+    },
+    {
+      "id": "c089e35234a2",
+      "type": "generic",
+      "subtype": "yaml_file",
+      "path": ".github/ISSUE_TEMPLATE/bulk_mark_inactive.yaml",
+      "name": "bulk_mark_inactive.yaml",
+      "metadata": {},
+      "content": {
+        "raw": "",
+        "error": "Failed to read file: [Errno 2] No such file or directory: '.github/ISSUE_TEMPLATE/bulk_mark_inactive.yaml'"
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775194"
+    },
+    {
+      "id": "7fc9e65e1c54",
+      "type": "generic",
+      "subtype": "yaml_file",
+      "path": ".github/ISSUE_TEMPLATE/feature_suggestion.yaml",
+      "name": "feature_suggestion.yaml",
+      "metadata": {},
+      "content": {
+        "raw": "",
+        "error": "Failed to read file: [Errno 2] No such file or directory: '.github/ISSUE_TEMPLATE/feature_suggestion.yaml'"
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775218"
+    },
+    {
+      "id": "93dacc2cc370",
+      "type": "generic",
+      "subtype": "yaml_file",
+      "path": ".github/ISSUE_TEMPLATE/misc.yaml",
+      "name": "misc.yaml",
+      "metadata": {},
+      "content": {
+        "raw": "",
+        "error": "Failed to read file: [Errno 2] No such file or directory: '.github/ISSUE_TEMPLATE/misc.yaml'"
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775237"
+    },
+    {
+      "id": "eeddaa05bcb9",
+      "type": "generic",
+      "subtype": "yaml_file",
+      "path": ".github/ISSUE_TEMPLATE/new_internship.yaml",
+      "name": "new_internship.yaml",
+      "metadata": {},
+      "content": {
+        "raw": "",
+        "error": "Failed to read file: [Errno 2] No such file or directory: '.github/ISSUE_TEMPLATE/new_internship.yaml'"
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775263"
+    },
+    {
+      "id": "6786703d4237",
+      "type": "generic",
+      "subtype": "yaml_file",
+      "path": ".github/ISSUE_TEMPLATE/edit_internship.yaml",
+      "name": "edit_internship.yaml",
+      "metadata": {},
+      "content": {
+        "raw": "",
+        "error": "Failed to read file: [Errno 2] No such file or directory: '.github/ISSUE_TEMPLATE/edit_internship.yaml'"
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775285"
+    },
+    {
+      "id": "51a15bc443b3",
+      "type": "generic",
+      "subtype": "markdown",
+      "path": ".github/README-scripts.md",
+      "name": "README-scripts.md",
+      "metadata": {},
+      "content": {
+        "raw": "",
+        "error": "Failed to read file: [Errno 2] No such file or directory: '.github/README-scripts.md'"
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775302"
+    },
+    {
+      "id": "044a25180285",
+      "type": "generic",
+      "subtype": "unknown",
+      "path": ".git/config",
+      "name": "config",
+      "metadata": {},
+      "content": {
+        "raw": "[core]\n\trepositoryformatversion = 0\n\tfilemode = true\n\tbare = false\n\tlogallrefupdates = true\n\tignorecase = true\n\tprecomposeunicode = true\n[remote \"origin\"]\n\turl = https://github.com/shawnachie/AI-DevOps-Agent.git\n\tfetch = +refs/heads/*:refs/remotes/origin/*\n[branch \"main\"]\n\tremote = origin\n\tmerge = refs/heads/main\n\tvscode-merge-base = origin/main\n\tvscode-merge-base = origin/main\n",
+        "structured": null
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775317"
+    },
+    {
+      "id": "f95043d4c197",
+      "type": "generic",
+      "subtype": "unknown",
+      "path": ".git/shallow",
+      "name": "shallow",
+      "metadata": {},
+      "content": {
+        "raw": "",
+        "error": "Failed to read file: [Errno 2] No such file or directory: '.git/shallow'"
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775330"
+    },
+    {
+      "id": "62fbaccadbd8",
+      "type": "generic",
+      "subtype": "unknown",
+      "path": ".git/HEAD",
+      "name": "HEAD",
+      "metadata": {},
+      "content": {
+        "raw": "ref: refs/heads/main\n",
+        "structured": null
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775345"
+    },
+    {
+      "id": "b7667c12cb07",
+      "type": "generic",
+      "subtype": "unknown",
+      "path": ".git/info/exclude",
+      "name": "exclude",
+      "metadata": {},
+      "content": {
+        "raw": "# git ls-files --others --exclude-from=.git/info/exclude\n# Lines that start with '#' are comments.\n# For a project mostly in C, the following would be a good set of\n# exclude patterns (uncomment them if you want to use them):\n# *.[oa]\n# *~\n.DS_Store\n",
+        "structured": null
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775361"
+    },
+    {
+      "id": "868d126398e0",
+      "type": "generic",
+      "subtype": "unknown",
+      "path": ".git/logs/HEAD",
+      "name": "HEAD",
+      "metadata": {},
+      "content": {
+        "raw": "0000000000000000000000000000000000000000 4c1c24c48e6f9e2fe25506612f0924f4a28fc29e shawnachie <163377983+shawnachie@users.noreply.github.com> 1763613722 -0500\tclone: from https://github.com/shawnachie/AI-DevOps-Agent.git\n4c1c24c48e6f9e2fe25506612f0924f4a28fc29e 91bdf020d90f79f6d5d0babdfac42fada57fc509 shawnachie <163377983+shawnachie@users.noreply.github.com> 1763615186 -0500\tcommit: Repo Setup - READMEs\n",
+        "structured": null
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775375"
+    },
+    {
+      "id": "4a7e7202179a",
+      "type": "generic",
+      "subtype": "unknown",
+      "path": ".git/logs/refs/heads/dev",
+      "name": "dev",
+      "metadata": {},
+      "content": {
+        "raw": "",
+        "error": "Failed to read file: [Errno 2] No such file or directory: '.git/logs/refs/heads/dev'"
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775393"
+    },
+    {
+      "id": "cecaccef115d",
+      "type": "generic",
+      "subtype": "unknown",
+      "path": ".git/logs/refs/remotes/origin/HEAD",
+      "name": "HEAD",
+      "metadata": {},
+      "content": {
+        "raw": "0000000000000000000000000000000000000000 4c1c24c48e6f9e2fe25506612f0924f4a28fc29e shawnachie <163377983+shawnachie@users.noreply.github.com> 1763613722 -0500\tclone: from https://github.com/shawnachie/AI-DevOps-Agent.git\n",
+        "structured": null
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775412"
+    },
+    {
+      "id": "528bc14c1ef5",
+      "type": "generic",
+      "subtype": "unknown",
+      "path": ".git/description",
+      "name": "description",
+      "metadata": {},
+      "content": {
+        "raw": "Unnamed repository; edit this file 'description' to name the repository.\n",
+        "structured": null
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775426"
+    },
+    {
+      "id": "add100e65a79",
+      "type": "generic",
+      "subtype": "unknown",
+      "path": ".git/hooks/commit-msg.sample",
+      "name": "commit-msg.sample",
+      "metadata": {},
+      "content": {
+        "raw": "#!/bin/sh\n#\n# An example hook script to check the commit log message.\n# Called by \"git commit\" with one argument, the name of the file\n# that has the commit message.  The hook should exit with non-zero\n# status after issuing an appropriate message if it wants to stop the\n# commit.  The hook is allowed to edit the commit message file.\n#\n# To enable this hook, rename this file to \"commit-msg\".\n\n# Uncomment the below to add a Signed-off-by line to the message.\n# Doing this in a hook is a bad idea in general, but the prepare-commit-msg\n# hook is more suited to it.\n#\n# SOB=$(git var GIT_AUTHOR_IDENT | sed -n 's/^\\(.*>\\).*$/Signed-off-by: \\1/p')\n# grep -qs \"^$SOB\" \"$1\" || echo \"$SOB\" >> \"$1\"\n\n# This example catches duplicate Signed-off-by lines.\n\ntest \"\" = \"$(grep '^Signed-off-by: ' \"$1\" |\n\t sort | uniq -c | sed -e '/^[ \t]*1[ \t]/d')\" || {\n\techo >&2 Duplicate Signed-off-by lines.\n\texit 1\n}\n",
+        "structured": null
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775446"
+    },
+    {
+      "id": "03469132bc8e",
+      "type": "generic",
+      "subtype": "unknown",
+      "path": ".git/hooks/pre-rebase.sample",
+      "name": "pre-rebase.sample",
+      "metadata": {},
+      "content": {
+        "raw": "#!/bin/sh\n#\n# Copyright (c) 2006, 2008 Junio C Hamano\n#\n# The \"pre-rebase\" hook is run just before \"git rebase\" starts doing\n# its job, and can prevent the command from running by exiting with\n# non-zero status.\n#\n# The hook is called with the following parameters:\n#\n# $1 -- the upstream the series was forked from.\n# $2 -- the branch being rebased (or empty when rebasing the current branch).\n#\n# This sample shows how to prevent topic branches that are already\n# merged to 'next' branch from getting rebased, because allowing it\n# would result in rebasing already published history.\n\npublish=next\nbasebranch=\"$1\"\nif test \"$#\" = 2\nthen\n\ttopic=\"refs/heads/$2\"\nelse\n\ttopic=`git symbolic-ref HEAD` ||\n\texit 0 ;# we do not interrupt rebasing detached HEAD\nfi\n\ncase \"$topic\" in\nrefs/heads/??/*)\n\t;;\n*)\n\texit 0 ;# we do not interrupt others.\n\t;;\nesac\n\n# Now we are dealing with a topic branch being rebased\n# on top of master.  Is it OK to rebase it?\n\n# Does the topic really exist?\ngit show-ref -q \"$topic\" || {\n\techo >&2 \"No such branch $topic\"\n\texit 1\n}\n\n# Is topic fully merged to master?\nnot_in_master=`git rev-list --pretty=oneline ^master \"$topic\"`\nif test -z \"$not_in_master\"\nthen\n\techo >&2 \"$topic is fully merged to master; better remove it.\"\n\texit 1 ;# we could allow it, but there is no point.\nfi\n\n# Is topic ever merged to next?  If so you should not be rebasing it.\nonly_next_1=`git rev-list ^master \"^$topic\" ${publish} | sort`\nonly_next_2=`git rev-list ^master           ${publish} | sort`\nif test \"$only_next_1\" = \"$only_next_2\"\nthen\n\tnot_in_topic=`git rev-list \"^$topic\" master`\n\tif test -z \"$not_in_topic\"\n\tthen\n\t\techo >&2 \"$topic is already up to date with master\"\n\t\texit 1 ;# we could allow it, but there is no point.\n\telse\n\t\texit 0\n\tfi\nelse\n\tnot_in_next=`git rev-list --pretty=oneline ^${publish} \"$topic\"`\n\t/usr/bin/perl -e '\n\t\tmy $topic = $ARGV[0];\n\t\tmy $msg = \"* $topic has commits already merged to public branch:\\n\";\n\t\tmy (%not_in_next) = map {\n\t\t\t/^([0-9a-f]+) /;\n\t\t\t($1 => 1);\n\t\t} split(/\\n/, $ARGV[1]);\n\t\tfor my $elem (map {\n\t\t\t\t/^([0-9a-f]+) (.*)$/;\n\t\t\t\t[$1 => $2];\n\t\t\t} split(/\\n/, $ARGV[2])) {\n\t\t\tif (!exists $not_in_next{$elem->[0]}) {\n\t\t\t\tif ($msg) {\n\t\t\t\t\tprint STDERR $msg;\n\t\t\t\t\tundef $msg;\n\t\t\t\t}\n\t\t\t\tprint STDERR \" $elem->[1]\\n\";\n\t\t\t}\n\t\t}\n\t' \"$topic\" \"$not_in_next\" \"$not_in_master\"\n\texit 1\nfi\n\n<<\\DOC_END\n\nThis sample hook safeguards topic branches that have been\npublished from being rewound.\n\nThe workflow assumed here is:\n\n * Once a topic branch forks from \"master\", \"master\" is never\n   merged into it again (either directly or indirectly).\n\n * Once a topic branch is fully cooked and merged into \"master\",\n   it is deleted.  If you need to build on top of it to correct\n   earlier mistakes, a new topic branch is created by forking at\n   the tip of the \"master\".  This is not strictly necessary, but\n   it makes it easier to keep your history simple.\n\n * Whenever you need to test or publish your changes to topic\n   branches, merge them into \"next\" branch.\n\nThe script, being an example, hardcodes the publish branch name\nto be \"next\", but it is trivial to make it configurable via\n$GIT_DIR/config mechanism.\n\nWith this workflow, you would want to know:\n\n(1) ... if a topic branch has ever been merged to \"next\".  Young\n    topic branches can have stupid mistakes you would rather\n    clean up before publishing, and things that have not been\n    merged into other branches can be easily rebased without\n    affecting other people.  But once it is published, you would\n    not want to rewind it.\n\n(2) ... if a topic branch has been fully merged to \"master\".\n    Then you can delete it.  More importantly, you should not\n    build on top of it -- other people may already want to\n    change things related to the topic as patches against your\n    \"master\", so if you need further changes, it is better to\n    fork the topic (perhaps with the same name) afresh from the\n    tip of \"master\".\n\nLet's look at this example:\n\n\t\t   o---o---o---o---o---o---o---o---o---o \"next\"\n\t\t  /       /           /           /\n\t\t /   a---a---b A     /           /\n\t\t/   /               /           /\n\t       /   /   c---c---c---c B         /\n\t      /   /   /             \\         /\n\t     /   /   /   b---b C     \\       /\n\t    /   /   /   /             \\     /\n    ---o---o---o---o---o---o---o---o---o---o---o \"master\"\n\n\nA, B and C are topic branches.\n\n * A has one fix since it was merged up to \"next\".\n\n * B has finished.  It has been fully merged up to \"master\" and \"next\",\n   and is ready to be deleted.\n\n * C has not merged to \"next\" at all.\n\nWe would want to allow C to be rebased, refuse A, and encourage\nB to be deleted.\n\nTo compute (1):\n\n\tgit rev-list ^master ^topic next\n\tgit rev-list ^master        next\n\n\tif these match, topic has not merged in next at all.\n\nTo compute (2):\n\n\tgit rev-list master..topic\n\n\tif this is empty, it is fully merged to \"master\".\n\nDOC_END\n",
+        "structured": null
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775463"
+    },
+    {
+      "id": "6b1a5018ad10",
+      "type": "generic",
+      "subtype": "unknown",
+      "path": ".git/hooks/pre-commit.sample",
+      "name": "pre-commit.sample",
+      "metadata": {},
+      "content": {
+        "raw": "#!/bin/sh\n#\n# An example hook script to verify what is about to be committed.\n# Called by \"git commit\" with no arguments.  The hook should\n# exit with non-zero status after issuing an appropriate message if\n# it wants to stop the commit.\n#\n# To enable this hook, rename this file to \"pre-commit\".\n\nif git rev-parse --verify HEAD >/dev/null 2>&1\nthen\n\tagainst=HEAD\nelse\n\t# Initial commit: diff against an empty tree object\n\tagainst=4b825dc642cb6eb9a060e54bf8d69288fbee4904\nfi\n\n# If you want to allow non-ASCII filenames set this variable to true.\nallownonascii=$(git config --bool hooks.allownonascii)\n\n# Redirect output to stderr.\nexec 1>&2\n\n# Cross platform projects tend to avoid non-ASCII filenames; prevent\n# them from being added to the repository. We exploit the fact that the\n# printable range starts at the space character and ends with tilde.\nif [ \"$allownonascii\" != \"true\" ] &&\n\t# Note that the use of brackets around a tr range is ok here, (it's\n\t# even required, for portability to Solaris 10's /usr/bin/tr), since\n\t# the square bracket bytes happen to fall in the designated range.\n\ttest $(git diff --cached --name-only --diff-filter=A -z $against |\n\t  LC_ALL=C tr -d '[ -~]\\0' | wc -c) != 0\nthen\n\tcat <<\\EOF\nError: Attempt to add a non-ASCII file name.\n\nThis can cause problems if you want to work with people on other platforms.\n\nTo be portable it is advisable to rename the file.\n\nIf you know what you are doing you can disable this check using:\n\n  git config hooks.allownonascii true\nEOF\n\texit 1\nfi\n\n# If there are whitespace errors, print the offending file names and fail.\nexec git diff-index --check --cached $against --\n",
+        "structured": null
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775480"
+    },
+    {
+      "id": "04beb3f809ef",
+      "type": "generic",
+      "subtype": "unknown",
+      "path": ".git/hooks/applypatch-msg.sample",
+      "name": "applypatch-msg.sample",
+      "metadata": {},
+      "content": {
+        "raw": "#!/bin/sh\n#\n# An example hook script to check the commit log message taken by\n# applypatch from an e-mail message.\n#\n# The hook should exit with non-zero status after issuing an\n# appropriate message if it wants to stop the commit.  The hook is\n# allowed to edit the commit message file.\n#\n# To enable this hook, rename this file to \"applypatch-msg\".\n\n. git-sh-setup\ncommitmsg=\"$(git rev-parse --git-path hooks/commit-msg)\"\ntest -x \"$commitmsg\" && exec \"$commitmsg\" ${1+\"$@\"}\n:\n",
+        "structured": null
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775499"
+    },
+    {
+      "id": "38211304af3e",
+      "type": "generic",
+      "subtype": "unknown",
+      "path": ".git/hooks/pre-receive.sample",
+      "name": "pre-receive.sample",
+      "metadata": {},
+      "content": {
+        "raw": "#!/bin/sh\n#\n# An example hook script to make use of push options.\n# The example simply echoes all push options that start with 'echoback='\n# and rejects all pushes when the \"reject\" push option is used.\n#\n# To enable this hook, rename this file to \"pre-receive\".\n\nif test -n \"$GIT_PUSH_OPTION_COUNT\"\nthen\n\ti=0\n\twhile test \"$i\" -lt \"$GIT_PUSH_OPTION_COUNT\"\n\tdo\n\t\teval \"value=\\$GIT_PUSH_OPTION_$i\"\n\t\tcase \"$value\" in\n\t\techoback=*)\n\t\t\techo \"echo from the pre-receive-hook: ${value#*=}\" >&2\n\t\t\t;;\n\t\treject)\n\t\t\texit 1\n\t\tesac\n\t\ti=$((i + 1))\n\tdone\nfi\n",
+        "structured": null
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775517"
+    },
+    {
+      "id": "abc270cb5d66",
+      "type": "generic",
+      "subtype": "unknown",
+      "path": ".git/hooks/prepare-commit-msg.sample",
+      "name": "prepare-commit-msg.sample",
+      "metadata": {},
+      "content": {
+        "raw": "#!/bin/sh\n#\n# An example hook script to prepare the commit log message.\n# Called by \"git commit\" with the name of the file that has the\n# commit message, followed by the description of the commit\n# message's source.  The hook's purpose is to edit the commit\n# message file.  If the hook fails with a non-zero status,\n# the commit is aborted.\n#\n# To enable this hook, rename this file to \"prepare-commit-msg\".\n\n# This hook includes three examples. The first one removes the\n# \"# Please enter the commit message...\" help message.\n#\n# The second includes the output of \"git diff --name-status -r\"\n# into the message, just before the \"git status\" output.  It is\n# commented because it doesn't cope with --amend or with squashed\n# commits.\n#\n# The third example adds a Signed-off-by line to the message, that can\n# still be edited.  This is rarely a good idea.\n\nCOMMIT_MSG_FILE=$1\nCOMMIT_SOURCE=$2\nSHA1=$3\n\n/usr/bin/perl -i.bak -ne 'print unless(m/^. Please enter the commit message/..m/^#$/)' \"$COMMIT_MSG_FILE\"\n\n# case \"$COMMIT_SOURCE,$SHA1\" in\n#  ,|template,)\n#    /usr/bin/perl -i.bak -pe '\n#       print \"\\n\" . `git diff --cached --name-status -r`\n# \t if /^#/ && $first++ == 0' \"$COMMIT_MSG_FILE\" ;;\n#  *) ;;\n# esac\n\n# SOB=$(git var GIT_COMMITTER_IDENT | sed -n 's/^\\(.*>\\).*$/Signed-off-by: \\1/p')\n# git interpret-trailers --in-place --trailer \"$SOB\" \"$COMMIT_MSG_FILE\"\n# if test -z \"$COMMIT_SOURCE\"\n# then\n#   /usr/bin/perl -i.bak -pe 'print \"\\n\" if !$first_line++' \"$COMMIT_MSG_FILE\"\n# fi\n",
+        "structured": null
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775537"
+    },
+    {
+      "id": "4826fd9d4ae6",
+      "type": "generic",
+      "subtype": "unknown",
+      "path": ".git/hooks/post-update.sample",
+      "name": "post-update.sample",
+      "metadata": {},
+      "content": {
+        "raw": "#!/bin/sh\n#\n# An example hook script to prepare a packed repository for use over\n# dumb transports.\n#\n# To enable this hook, rename this file to \"post-update\".\n\nexec git update-server-info\n",
+        "structured": null
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775555"
+    },
+    {
+      "id": "f48fcbf4414f",
+      "type": "generic",
+      "subtype": "unknown",
+      "path": ".git/hooks/pre-applypatch.sample",
+      "name": "pre-applypatch.sample",
+      "metadata": {},
+      "content": {
+        "raw": "#!/bin/sh\n#\n# An example hook script to verify what is about to be committed\n# by applypatch from an e-mail message.\n#\n# The hook should exit with non-zero status after issuing an\n# appropriate message if it wants to stop the commit.\n#\n# To enable this hook, rename this file to \"pre-applypatch\".\n\n. git-sh-setup\nprecommit=\"$(git rev-parse --git-path hooks/pre-commit)\"\ntest -x \"$precommit\" && exec \"$precommit\" ${1+\"$@\"}\n:\n",
+        "structured": null
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775579"
+    },
+    {
+      "id": "9ea6b2be2e91",
+      "type": "generic",
+      "subtype": "unknown",
+      "path": ".git/hooks/pre-push.sample",
+      "name": "pre-push.sample",
+      "metadata": {},
+      "content": {
+        "raw": "#!/bin/sh\n\n# An example hook script to verify what is about to be pushed.  Called by \"git\n# push\" after it has checked the remote status, but before anything has been\n# pushed.  If this script exits with a non-zero status nothing will be pushed.\n#\n# This hook is called with the following parameters:\n#\n# $1 -- Name of the remote to which the push is being done\n# $2 -- URL to which the push is being done\n#\n# If pushing without using a named remote those arguments will be equal.\n#\n# Information about the commits which are being pushed is supplied as lines to\n# the standard input in the form:\n#\n#   <local ref> <local sha1> <remote ref> <remote sha1>\n#\n# This sample shows how to prevent push of commits where the log message starts\n# with \"WIP\" (work in progress).\n\nremote=\"$1\"\nurl=\"$2\"\n\nz40=0000000000000000000000000000000000000000\n\nwhile read local_ref local_sha remote_ref remote_sha\ndo\n\tif [ \"$local_sha\" = $z40 ]\n\tthen\n\t\t# Handle delete\n\t\t:\n\telse\n\t\tif [ \"$remote_sha\" = $z40 ]\n\t\tthen\n\t\t\t# New branch, examine all commits\n\t\t\trange=\"$local_sha\"\n\t\telse\n\t\t\t# Update to existing branch, examine new commits\n\t\t\trange=\"$remote_sha..$local_sha\"\n\t\tfi\n\n\t\t# Check for WIP commit\n\t\tcommit=`git rev-list -n 1 --grep '^WIP' \"$range\"`\n\t\tif [ -n \"$commit\" ]\n\t\tthen\n\t\t\techo >&2 \"Found WIP commit in $local_ref, not pushing\"\n\t\t\texit 1\n\t\tfi\n\tfi\ndone\n\nexit 0\n",
+        "structured": null
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775596"
+    },
+    {
+      "id": "7ed801a023c6",
+      "type": "generic",
+      "subtype": "unknown",
+      "path": ".git/hooks/update.sample",
+      "name": "update.sample",
+      "metadata": {},
+      "content": {
+        "raw": "#!/bin/sh\n#\n# An example hook script to block unannotated tags from entering.\n# Called by \"git receive-pack\" with arguments: refname sha1-old sha1-new\n#\n# To enable this hook, rename this file to \"update\".\n#\n# Config\n# ------\n# hooks.allowunannotated\n#   This boolean sets whether unannotated tags will be allowed into the\n#   repository.  By default they won't be.\n# hooks.allowdeletetag\n#   This boolean sets whether deleting tags will be allowed in the\n#   repository.  By default they won't be.\n# hooks.allowmodifytag\n#   This boolean sets whether a tag may be modified after creation. By default\n#   it won't be.\n# hooks.allowdeletebranch\n#   This boolean sets whether deleting branches will be allowed in the\n#   repository.  By default they won't be.\n# hooks.denycreatebranch\n#   This boolean sets whether remotely creating branches will be denied\n#   in the repository.  By default this is allowed.\n#\n\n# --- Command line\nrefname=\"$1\"\noldrev=\"$2\"\nnewrev=\"$3\"\n\n# --- Safety check\nif [ -z \"$GIT_DIR\" ]; then\n\techo \"Don't run this script from the command line.\" >&2\n\techo \" (if you want, you could supply GIT_DIR then run\" >&2\n\techo \"  $0 <ref> <oldrev> <newrev>)\" >&2\n\texit 1\nfi\n\nif [ -z \"$refname\" -o -z \"$oldrev\" -o -z \"$newrev\" ]; then\n\techo \"usage: $0 <ref> <oldrev> <newrev>\" >&2\n\texit 1\nfi\n\n# --- Config\nallowunannotated=$(git config --bool hooks.allowunannotated)\nallowdeletebranch=$(git config --bool hooks.allowdeletebranch)\ndenycreatebranch=$(git config --bool hooks.denycreatebranch)\nallowdeletetag=$(git config --bool hooks.allowdeletetag)\nallowmodifytag=$(git config --bool hooks.allowmodifytag)\n\n# check for no description\nprojectdesc=$(sed -e '1q' \"$GIT_DIR/description\")\ncase \"$projectdesc\" in\n\"Unnamed repository\"* | \"\")\n\techo \"*** Project description file hasn't been set\" >&2\n\texit 1\n\t;;\nesac\n\n# --- Check types\n# if $newrev is 0000...0000, it's a commit to delete a ref.\nzero=\"0000000000000000000000000000000000000000\"\nif [ \"$newrev\" = \"$zero\" ]; then\n\tnewrev_type=delete\nelse\n\tnewrev_type=$(git cat-file -t $newrev)\nfi\n\ncase \"$refname\",\"$newrev_type\" in\n\trefs/tags/*,commit)\n\t\t# un-annotated tag\n\t\tshort_refname=${refname##refs/tags/}\n\t\tif [ \"$allowunannotated\" != \"true\" ]; then\n\t\t\techo \"*** The un-annotated tag, $short_refname, is not allowed in this repository\" >&2\n\t\t\techo \"*** Use 'git tag [ -a | -s ]' for tags you want to propagate.\" >&2\n\t\t\texit 1\n\t\tfi\n\t\t;;\n\trefs/tags/*,delete)\n\t\t# delete tag\n\t\tif [ \"$allowdeletetag\" != \"true\" ]; then\n\t\t\techo \"*** Deleting a tag is not allowed in this repository\" >&2\n\t\t\texit 1\n\t\tfi\n\t\t;;\n\trefs/tags/*,tag)\n\t\t# annotated tag\n\t\tif [ \"$allowmodifytag\" != \"true\" ] && git rev-parse $refname > /dev/null 2>&1\n\t\tthen\n\t\t\techo \"*** Tag '$refname' already exists.\" >&2\n\t\t\techo \"*** Modifying a tag is not allowed in this repository.\" >&2\n\t\t\texit 1\n\t\tfi\n\t\t;;\n\trefs/heads/*,commit)\n\t\t# branch\n\t\tif [ \"$oldrev\" = \"$zero\" -a \"$denycreatebranch\" = \"true\" ]; then\n\t\t\techo \"*** Creating a branch is not allowed in this repository\" >&2\n\t\t\texit 1\n\t\tfi\n\t\t;;\n\trefs/heads/*,delete)\n\t\t# delete branch\n\t\tif [ \"$allowdeletebranch\" != \"true\" ]; then\n\t\t\techo \"*** Deleting a branch is not allowed in this repository\" >&2\n\t\t\texit 1\n\t\tfi\n\t\t;;\n\trefs/remotes/*,commit)\n\t\t# tracking branch\n\t\t;;\n\trefs/remotes/*,delete)\n\t\t# delete tracking branch\n\t\tif [ \"$allowdeletebranch\" != \"true\" ]; then\n\t\t\techo \"*** Deleting a tracking branch is not allowed in this repository\" >&2\n\t\t\texit 1\n\t\tfi\n\t\t;;\n\t*)\n\t\t# Anything else (is there anything else?)\n\t\techo \"*** Update hook: unknown type of update to ref $refname of type $newrev_type\" >&2\n\t\texit 1\n\t\t;;\nesac\n\n# --- Finished\nexit 0\n",
+        "structured": null
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775612"
+    },
+    {
+      "id": "b0b9f60e8f5e",
+      "type": "generic",
+      "subtype": "unknown",
+      "path": ".git/refs/heads/dev",
+      "name": "dev",
+      "metadata": {},
+      "content": {
+        "raw": "",
+        "error": "Failed to read file: [Errno 2] No such file or directory: '.git/refs/heads/dev'"
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775627"
+    },
+    {
+      "id": "b859cf91cd0d",
+      "type": "generic",
+      "subtype": "unknown",
+      "path": ".git/refs/remotes/origin/HEAD",
+      "name": "HEAD",
+      "metadata": {},
+      "content": {
+        "raw": "ref: refs/remotes/origin/main\n",
+        "structured": null
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775645"
+    },
+    {
+      "id": "06d627ea44cb",
+      "type": "generic",
+      "subtype": "unknown",
+      "path": ".git/packed-refs",
+      "name": "packed-refs",
+      "metadata": {},
+      "content": {
+        "raw": "# pack-refs with: peeled fully-peeled sorted \n4c1c24c48e6f9e2fe25506612f0924f4a28fc29e refs/remotes/origin/main\n",
+        "structured": null
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775659"
+    },
+    {
+      "id": "706ead79aa39",
+      "type": "generic",
+      "subtype": "markdown",
+      "path": "archived/README-2021.md",
+      "name": "README-2021.md",
+      "metadata": {},
+      "content": {
+        "raw": "",
+        "error": "Failed to read file: [Errno 2] No such file or directory: 'archived/README-2021.md'"
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775676"
+    },
+    {
+      "id": "03f14d781b6b",
+      "type": "generic",
+      "subtype": "markdown",
+      "path": "archived/README-2025.md",
+      "name": "README-2025.md",
+      "metadata": {},
+      "content": {
+        "raw": "",
+        "error": "Failed to read file: [Errno 2] No such file or directory: 'archived/README-2025.md'"
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775692"
+    },
+    {
+      "id": "b567a6ac27ba",
+      "type": "generic",
+      "subtype": "markdown",
+      "path": "archived/README-2024.md",
+      "name": "README-2024.md",
+      "metadata": {},
+      "content": {
+        "raw": "",
+        "error": "Failed to read file: [Errno 2] No such file or directory: 'archived/README-2024.md'"
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775708"
+    },
+    {
+      "id": "f726a00dcf29",
+      "type": "generic",
+      "subtype": "markdown",
+      "path": "archived/README-2023.md",
+      "name": "README-2023.md",
+      "metadata": {},
+      "content": {
+        "raw": "",
+        "error": "Failed to read file: [Errno 2] No such file or directory: 'archived/README-2023.md'"
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775724"
+    },
+    {
+      "id": "e9faa2a63f1d",
+      "type": "generic",
+      "subtype": "markdown",
+      "path": "archived/README-2022.md",
+      "name": "README-2022.md",
+      "metadata": {},
+      "content": {
+        "raw": "",
+        "error": "Failed to read file: [Errno 2] No such file or directory: 'archived/README-2022.md'"
+      },
+      "relationships": {
+        "depends_on": [],
+        "used_by": [],
+        "references": []
+      },
+      "tags": [],
+      "summary": "",
+      "extracted_at": "2025-11-30T00:51:13.775740"
+    }
+  ],
+  "relationships": {},
+  "summary": {
+    "primary_language": "py",
+    "project_type": "application",
+    "ci_platform": "github_actions",
+    "containerization": false,
+    "dependency_managers": [],
+    "infrastructure_tools": []
+  }
+}
