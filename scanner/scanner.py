@@ -162,22 +162,33 @@ class RepositoryScanner:
         repo_path = Path(repo_root)
         repo_name = repo_path.name
         
-        # Convert artifacts to dict format
+        # Convert artifacts to dict format with filtering and minification
         artifacts_list = []
         for artifact in artifacts.artifacts:
-            artifacts_list.append({
-                'id': artifact.id,
+            # Filter: Skip artifacts where content['raw'] is empty AND content has 'error'
+            content = artifact.content
+            if isinstance(content, dict):
+                raw_content = content.get('raw', '')
+                has_error = 'error' in content
+                if not raw_content and has_error:
+                    continue  # Skip useless failed reads
+            
+            # Build artifact dict, excluding minified fields
+            artifact_dict = {
                 'type': artifact.type.value if isinstance(artifact.type, ArtifactType) else artifact.type,
                 'subtype': artifact.subtype,
                 'path': artifact.path,
                 'name': artifact.name,
                 'metadata': artifact.metadata,
-                'content': artifact.content,
-                'relationships': artifact.relationships,
-                'tags': artifact.tags,
+                'content': content,
                 'summary': artifact.summary,
-                'extracted_at': artifact.extracted_at.isoformat()
-            })
+            }
+            
+            # Only include tags if not empty
+            if artifact.tags:
+                artifact_dict['tags'] = artifact.tags
+            
+            artifacts_list.append(artifact_dict)
         
         # Build relationship structure
         relationship_dict = {}

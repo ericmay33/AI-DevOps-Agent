@@ -12,6 +12,10 @@ from .models import FileInfo, FileInventory
 from .gitignore import load_gitignore_patterns, matches_gitignore
 
 
+# Default ignore patterns (in addition to .gitignore)
+DEFAULT_IGNORE_PATTERNS = ['.git', '__pycache__', 'node_modules', '.venv', '.idea', '.vscode']
+
+
 # Path patterns for initial type identification
 PATH_PATTERNS = {
     'workflow': [
@@ -147,6 +151,12 @@ def initial_discovery(repo_root: str) -> FileInventory:
                 
                 # Normalize path separators
                 relative_path = relative_path.replace('\\', '/')
+                
+                # Check default ignore patterns (skip entire directories)
+                if entry.is_dir():
+                    dir_name = entry.name
+                    if dir_name in DEFAULT_IGNORE_PATTERNS:
+                        continue  # Skip walking this directory entirely
                 
                 # Check gitignore
                 if matches_gitignore(relative_path, gitignore_patterns):
