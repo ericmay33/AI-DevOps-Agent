@@ -1,0 +1,174 @@
+{
+  "repo": {
+    "full_name": "ericmay33/GitHub-Actions-Test",
+    "default_branch": "main"
+  },
+  "static_analysis": {
+    "repository": {
+      "id": "2286afae127aff74",
+      "name": "agent-scans_bosiw5y0",
+      "url": "",
+      "default_branch": "main",
+      "scanned_at": "2025-12-17T03:15:11.894359",
+      "scan_version": "1.0.0"
+    },
+    "artifacts": [
+      {
+        "type": "generic",
+        "subtype": "markdown",
+        "path": "README.md",
+        "name": "README.md",
+        "metadata": {},
+        "content": {
+          "raw": "# DevOps Autonomous CI Remediation Agent\n\n## Overview\nThis project is an AI-powered DevOps agent that analyzes a repository, detects CI/CD pipeline failures, determines the root cause, proposes or applies fixes, and automatically opens pull requests.\n\nThe system is built now with:\n\n- 🔍 Repository analysis  \n- 🧠 CI failure diagnosis  \n- 🛠️ Auto-generated patches  \n- 🔁 PR automation with explanations  \n\nWe are **not yet implementing infrastructure consistency scans**, but the system architecture is intentionally designed so that such features can plug in later without major rewrites.\n\n---\n\n## System Architecture\\\n\nRepository\n↓\nScanner / Analyzer\n↓\nKnowledge Model (LLM + structured storage)\n↓\nFailure Analysis (root cause)\n↓\nProposed Fix / Patch Generator\n↓\nGitHub API → Branch → Commit → PR\n\n### Components\n\n#### Repo Analysis Engine\n- Walks repo tree\n- Identifies:\n  - Workflows\n  - Dockerfiles\n  - Dependency files\n  - Key config files\n- Produces a structured data model the agent can query\n\n#### CI Log Ingestion\n- Interfaces with GitHub API\n- Fetches logs from failed runs\n\n#### Reasoning Engine\n- Classifies failure type  \n- Generates a structured remediation plan\n\n#### Patch Generator\n- Applies file edits\n- Writes or updates config files accordingly\n\n#### PR Automation\nCreates a full pull request including:\n- Summary of failure\n- Reasoning behind fix\n- Changes made\n- Confidence estimates\n\n---\n\n## Technology Stack\n\n### Backend\n- Python (FastAPI or similar)\n- GitHub REST or GraphQL API\n- Repo FS parsing\n- Docker\n\n### Agent / AI\n- LLM-based reasoning\n- Deterministic guardrail prompts\n- Optional embeddings for persistent repo context\n\n### Frontend\nA minimal interface showing:\n- Live agent actions (e.g. “Analyzing CI logs…”)\n- Repo scan results\n- Proposed patches\n- PR history\n\n---\n\n## Future Expansion\nLater we will add **infrastructure consistency and drift checks**, and the architecture has been built to make this possible without:\n\n- Changing the repo knowledge model\n- Rewriting patch application logic\n- Replacing the CI analysis workflow\n\n---\n\n## Project Status\n- Requirements defined  \n- Architecture designed  \n- Development beginning  \n",
+          "structured": null
+        },
+        "summary": ""
+      },
+      {
+        "type": "dependency_manifest",
+        "subtype": "pip",
+        "path": "requirements.txt",
+        "name": "requirements.txt",
+        "metadata": {
+          "package_manager": "pip",
+          "lock_file_present": false,
+          "lock_file_path": "",
+          "dependencies": {
+            "direct": [
+              {
+                "name": "pytest",
+                "version": "7.4.0",
+                "type": "runtime"
+              }
+            ]
+          },
+          "scripts": {}
+        },
+        "content": {
+          "raw": "pyyaml>=6.0\npathspec>=0.11.0\nPyGitHub>=1.55\npydantic>=2.0.0\ndotenv\nrequests>=2.28.0",
+          "structured": null
+        },
+        "summary": ""
+      },
+      {
+        "type": "source",
+        "subtype": "py",
+        "path": "src/app.py",
+        "name": "app.py",
+        "metadata": {
+          "language": "py"
+        },
+        "content": {
+          "raw": "",
+          "structured": null
+        },
+        "summary": ""
+      },
+      {
+        "type": "source",
+        "subtype": "py",
+        "path": "tests/test_app.py",
+        "name": "test_app.py",
+        "metadata": {
+          "language": "py"
+        },
+        "content": {
+          "raw": "",
+          "structured": null
+        },
+        "summary": ""
+      }
+    ],
+    "relationships": {
+      "7c2e285a176e": [
+        {
+          "type": "depends_on",
+          "to": "b4ef698db8ca"
+        }
+      ],
+      "364ad9a9a359": [
+        {
+          "type": "depends_on",
+          "to": "b4ef698db8ca"
+        }
+      ]
+    },
+    "summary": {
+      "primary_language": "py",
+      "project_type": "application",
+      "ci_platform": "github_actions",
+      "containerization": false,
+      "dependency_managers": [
+        "pip"
+      ],
+      "infrastructure_tools": []
+    }
+  },
+  "ci_context": {
+    "platform": "github_actions",
+    "recent_runs": [
+      {
+        "run_id": 20293741118,
+        "name": "Environment Variable Error",
+        "conclusion": "failure"
+      },
+      {
+        "run_id": 20293741106,
+        "name": "Syntax Error Workflow",
+        "conclusion": "failure"
+      },
+      {
+        "run_id": 20293741105,
+        "name": "Timeout Error",
+        "conclusion": "cancelled"
+      },
+      {
+        "run_id": 20293741095,
+        "name": "Missing Dependency",
+        "conclusion": "failure"
+      },
+      {
+        "run_id": 20293741091,
+        "name": "Failing Tests",
+        "conclusion": "failure"
+      },
+      {
+        "run_id": 20293733213,
+        "name": "Syntax Error Workflow",
+        "conclusion": "failure"
+      },
+      {
+        "run_id": 20293733197,
+        "name": "Failing Tests",
+        "conclusion": "failure"
+      },
+      {
+        "run_id": 20293733188,
+        "name": "Timeout Error",
+        "conclusion": "cancelled"
+      },
+      {
+        "run_id": 20293733187,
+        "name": "Missing Dependency",
+        "conclusion": "failure"
+      },
+      {
+        "run_id": 20293733184,
+        "name": "Environment Variable Error",
+        "conclusion": "failure"
+      }
+    ],
+    "failure_logs": [
+      {
+        "job_name": "deploy",
+        "step_name": "Use missing env var",
+        "log_content": "2025-12-17T06:23:27.6442268Z [command]/usr/bin/git log -1 --format='%H'\n2025-12-17T06:23:27.6465323Z '6f9597c40533900bfee56e92774d1fcca82480eb'\n2025-12-17T06:23:27.6667919Z ##[group]Run echo \"API Key: \"\n2025-12-17T06:23:27.6668497Z \u001b[36;1mecho \"API Key: \"\u001b[0m\n2025-12-17T06:23:27.6668952Z \u001b[36;1mif [ -z \"\" ]; then\u001b[0m\n2025-12-17T06:23:27.6669480Z \u001b[36;1m  echo \"Error: MISSING_API_KEY is not set\"\u001b[0m\n2025-12-17T06:23:27.6670032Z \u001b[36;1m  exit 1\u001b[0m\n2025-12-17T06:23:27.6670413Z \u001b[36;1mfi\u001b[0m\n2025-12-17T06:23:27.6705886Z shell: /usr/bin/bash -e {0}\n2025-12-17T06:23:27.6706373Z ##[endgroup]\n2025-12-17T06:23:27.6777970Z API Key: \n2025-12-17T06:23:27.6780437Z Error: MISSING_API_KEY is not set\n2025-12-17T06:23:27.6791876Z ##[error]Process completed with exit code 1.\n2025-12-17T06:23:27.6891203Z Post job cleanup.\n2025-12-17T06:23:27.7679695Z [command]/usr/bin/git version\n2025-12-17T06:23:27.7713556Z git version 2.52.0\n2025-12-17T06:23:27.7756572Z Temporarily overriding HOME='/home/runner/work/_temp/2711481d-998d-4ab5-8ea1-a8a4dde08bb4' before making global git config changes\n2025-12-17T06:23:27.7758068Z Adding repository directory to the temporary git global config as a safe directory"
+      }
+    ],
+    "data": {
+      "latest_failure_run_id": 20293741118,
+      "total_runs_fetched": 10
+    }
+  }
+}
